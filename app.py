@@ -23,49 +23,71 @@ task = st.sidebar.radio("Select Speech Task:", ["1. ASR (Diversity)", "2. TTS (P
 # ==========================================
 if task == "1. ASR (Diversity)":
     st.header("1. Automatic Speech Recognition (ASR)")
-    st.subheader("The Challenge: Redundancy vs. Diversity")
+    
+    # --- PHASE 1: DEFINITION (Slide 2) ---
+    st.subheader("Part A: State-of-the-Art Definition (Slide 2)")
+    st.markdown("Run OpenAI's **Whisper** model on standard, clear speech.")
+    
+    if st.button("🎙️ Run ASR Demo"):
+        text = "Automatic Speech Recognition converts spoken language into text."
+        tts = gTTS(text, lang='en')
+        tts.save("def.mp3")
+        st.audio("def.mp3")
+        
+        try:
+            model = whisper.load_model("tiny")
+            result = model.transcribe("def.mp3")
+            st.success(f"**Transcript:** '{result['text']}'")
+            st.info("✅ Result: The model understands standard data perfectly.")
+        except Exception as e:
+            st.error(f"Model Error: {e}")
+
+    st.divider()
+
+    # --- PHASE 2: THE SOLUTION (Slide 5) ---
+    st.subheader("Part B: The Selection Solution (Slide 5)")
     st.markdown("""
-    Most training data is "easy" (clean speech). To improve efficiency, we need to find the "hard" examples (high uncertainty).
+    **The Problem:** Random selection just picks more "Easy" data (like above).
+    **The Solution:** We must find the **High Uncertainty** samples.
     """)
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.info("**Random Selection** (Clean Data)")
-        if st.button("Generate Clean Sample"):
-            text = "The quick brown fox jumps over the lazy dog."
+        st.caption("Random Selection (Easy Data)")
+        if st.button("🎲 Select Randomly"):
+            text = "This is standard training data."
             tts = gTTS(text, lang='en')
-            tts.save("clean.mp3")
-            st.audio("clean.mp3")
+            tts.save("easy.mp3")
+            st.audio("easy.mp3")
             
-            # Transcription (Mocked or Real)
             try:
                 model = whisper.load_model("tiny")
-                result = model.transcribe("clean.mp3")
-                st.success(f"**Whisper Output:** '{result['text']}'")
-                st.caption("The model learned nothing new.")
-            except Exception as e:
-                st.error(f"Model Error: {e}")
+                result = model.transcribe("easy.mp3")
+                st.write(f"**Transcript:** '{result['text']}'")
+                st.info("Low Entropy (Model is bored).")
+            except:
+                st.error("Error")
 
     with col2:
-        st.error("**Intelligent Selection** (Noisy Data)")
-        if st.button("Generate Noisy Sample"):
+        st.caption("Intelligent Selection (Hard Data)")
+        if st.button("🧠 Select via Entropy"):
             # Create Noisy Audio
-            text = "The quick brown fox jumps over the lazy dog."
+            text = "This is standard training data."
             tts = gTTS(text, lang='en')
             tts.save("temp.mp3")
             data, fs = sf.read("temp.mp3")
             noise = np.random.normal(0, 0.05, len(data))
-            sf.write("noisy.wav", data + noise, fs)
-            st.audio("noisy.wav")
+            sf.write("hard.wav", data + noise, fs)
+            st.audio("hard.wav")
 
             try:
                 model = whisper.load_model("tiny")
-                result = model.transcribe("noisy.wav")
-                st.warning(f"**Whisper Output:** '{result['text']}'")
-                st.caption("The model struggled! This sample has **High Information Value**.")
+                result = model.transcribe("hard.wav")
+                st.write(f"**Transcript:** '{result['text']}'")
+                st.warning("High Entropy (Model is learning!).")
             except:
-                st.error("Model Error")
+                st.error("Error")
 
 # ==========================================
 # TASK 2: TTS DEMO
