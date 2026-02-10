@@ -9,11 +9,10 @@ import os
 # Set Page Config
 st.set_page_config(
     page_title="Data Selection Demo",
-    page_icon="🎙️",
     layout="wide"
 )
 
-st.title("🎙️ Data Selection for Efficient Speech Processing")
+st.title("Data Selection for Efficient Speech Processing")
 st.markdown("**Based on the survey by Azeemi et al. (2025)**")
 
 # Sidebar for Navigation
@@ -32,7 +31,7 @@ if task == "1. ASR (Diversity)":
     col1, col2 = st.columns(2)
 
     with col1:
-        st.info("🟢 **Random Selection** (Clean Data)")
+        st.info("**Random Selection** (Clean Data)")
         if st.button("Generate Clean Sample"):
             text = "The quick brown fox jumps over the lazy dog."
             tts = gTTS(text, lang='en')
@@ -40,18 +39,16 @@ if task == "1. ASR (Diversity)":
             st.audio("clean.mp3")
             
             # Transcription (Mocked or Real)
-            # We mock the 'Tiny' model behavior for speed/stability in cloud if whisper isn't cached
-            # But let's try real whisper if installed
             try:
                 model = whisper.load_model("tiny")
                 result = model.transcribe("clean.mp3")
                 st.success(f"**Whisper Output:** '{result['text']}'")
-                st.caption("✅ The model learned nothing new.")
+                st.caption("The model learned nothing new.")
             except Exception as e:
                 st.error(f"Model Error: {e}")
 
     with col2:
-        st.error("🔴 **Intelligent Selection** (Noisy Data)")
+        st.error("**Intelligent Selection** (Noisy Data)")
         if st.button("Generate Noisy Sample"):
             # Create Noisy Audio
             text = "The quick brown fox jumps over the lazy dog."
@@ -66,7 +63,7 @@ if task == "1. ASR (Diversity)":
                 model = whisper.load_model("tiny")
                 result = model.transcribe("noisy.wav")
                 st.warning(f"**Whisper Output:** '{result['text']}'")
-                st.caption("⚠️ The model struggled! This sample has **High Information Value**.")
+                st.caption("The model struggled! This sample has **High Information Value**.")
             except:
                 st.error("Model Error")
 
@@ -75,10 +72,10 @@ if task == "1. ASR (Diversity)":
 # ==========================================
 elif task == "2. TTS (Purity)":
     st.header("2. Text-to-Speech (TTS)")
-    st.subheader("The Challenge: Noise is Poison")
+    st.subheader("The Challenge: Impact of Noise on Synthesis")
     st.markdown("""
-    Unlike ASR, training TTS on noisy data creates glitches in the synthetic voice.
-    We use **Segment-Level Pruning** to cut out bad artifacts.
+    Unlike ASR, training TTS on noisy data creates artifacts in the synthetic voice.
+    We use **Segment-Level Pruning** to remove detrimental segments.
     """)
 
     # Generate Signal
@@ -105,14 +102,14 @@ elif task == "2. TTS (Purity)":
         st.success("2. Pruned Data (Usable)")
         sf.write("pruned_tts.wav", pruned_sig, 16000)
         st.audio("pruned_tts.wav")
-        st.caption("Artifact surgically removed.")
+        st.caption("Artifact removed.")
 
 # ==========================================
 # TASK 3: ANTI-SPOOFING DEMO
 # ==========================================
 elif task == "3. Anti-Spoofing (Robustness)":
     st.header("3. Audio Anti-Spoofing")
-    st.subheader("The Challenge: The Moving Target")
+    st.subheader("The Challenge: Adversarial Adaptation")
     st.markdown("""
     To detect unseen attacks, we focus on **Forgetting Events**—samples the model struggles to remember during training.
     """)
@@ -133,4 +130,4 @@ elif task == "3. Anti-Spoofing (Robustness)":
     ax.grid(True, alpha=0.3)
 
     st.pyplot(fig)
-    st.caption("The 'Hard Sample' flips back and forth. This boundary case is critical for generalization.")
+    st.caption("The 'Hard Sample' oscillates between correct and incorrect. This boundary case is critical for generalization.")
